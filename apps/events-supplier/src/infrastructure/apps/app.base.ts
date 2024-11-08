@@ -1,4 +1,5 @@
 import Express, { Request, Response } from 'express';
+import Compression from 'compression'
 import { Query } from 'express-serve-static-core';
 
 import { ErrorAppResponse, SuccessAppResponse } from './dto-models/server.dto';
@@ -12,6 +13,8 @@ export abstract class AppBase {
 
 	private init() {
 		this.server = Express();
+
+		this.server.use(Compression());
 
 		this.setup(this.server);
 

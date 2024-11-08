@@ -241,3 +241,49 @@ Status Codes  [code:count]                      200:10000
 Error Set:
 
 ```
+
+## Version 3 after warmup - VEGETA: 1000 request concurrent
+
+` 99% percentile in 571.497ms `
+
+```
+Requests      [total, rate, throughput]         10000, 1000.19, 1000.06
+Duration      [total, attack, wait]             9.999s, 9.998s, 1.313ms
+Latencies     [min, mean, 50, 90, 95, 99, max]  559.417µs, 71.153ms, 1.432ms, 34.449ms, 571.497ms, 1.479s, 1.515s
+Bytes In      [total, mean]                     6220000, 622.00
+Bytes Out     [total, mean]                     0, 0.00
+Success       [ratio]                           100.00%
+Status Codes  [code:count]                      200:10000  
+Error Set:
+```
+
+## Version 4 : VEGETA 100 request cocurrent
+
+We enable gzip as a compressor method for the response;
+
+`It doesn't seems to improve the the performance`
+
+```
+Requests      [total, rate, throughput]         20000, 1000.05, 999.99
+Duration      [total, attack, wait]             20s, 19.999s, 1.176ms
+Latencies     [min, mean, 50, 90, 95, 99, max]  606.208µs, 287.723ms, 1.703ms, 236.926ms, 3.165s, 3.62s, 7.186s
+Bytes In      [total, mean]                     12440000, 622.00
+Bytes Out     [total, mean]                     0, 0.00
+Success       [ratio]                           100.00%
+Status Codes  [code:count]                      200:20000  
+Error Set:
+```
+
+`After warpup`
+
+```
+Requests      [total, rate, throughput]         20000, 1000.05, 999.99
+Duration      [total, attack, wait]             20s, 19.999s, 1.151ms
+Latencies     [min, mean, 50, 90, 95, 99, max]  616.333µs, 36.999ms, 1.404ms, 22.324ms, 124.364ms, 1.091s, 1.161s
+Bytes In      [total, mean]                     12440000, 622.00
+Bytes Out     [total, mean]                     0, 0.00
+Success       [ratio]                           100.00%
+Status Codes  [code:count]                      200:20000  
+Error Set:
+
+```
