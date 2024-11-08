@@ -1,20 +1,41 @@
 import { MongoClient, Collection } from 'mongodb';
 
 export abstract class MongoEventsRepositoryBase {
+
+	private operationCount = 0;
+	private currentClientConnection?: MongoClient;
+
 	constructor(
 		private database: string,
 		private connectionUrl: string,
 	) {}
 
+	private createNewConnection(): MongoClient {
+		console.log("Open new connection to the database");
+		return new MongoClient(this.connectionUrl);
+	}
+
 	protected async openConection<R>(callback: (client: MongoClient) => Promise<R>): Promise<R> {
-		let client: MongoClient | undefined;
 		let result: R;
 
+		this.operationCount = this.operationCount + 1;
+
 		try {
-			client = new MongoClient(this.connectionUrl);
-			result = await callback(client);
+			this.currentClientConnection = this.currentClientConnection || this.createNewConnection();
+			result = await callback(this.currentClientConnection);
+
 		} finally {
-			await (client?.close?.());
+			this.operationCount = this.operationCount - 1;
+
+			const shouldCloseConnection = this.currentClientConnection !== undefined &&
+				this.operationCount === 0;
+
+			if (shouldCloseConnection) {
+				const connection = this.currentClientConnection as MongoClient;
+				this.currentClientConnection = undefined;
+				await (connection.close());
+				
+			}
 		}
 
 		return result;
