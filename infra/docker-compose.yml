@@ -1,0 +1,68 @@
+version: '3.9'
+
+services:
+  mongo:
+    image: mongo:latest
+    container_name: mongodb
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo-data:/data/db
+    environment:
+      MONGO_INITDB_DATABASE: challenge-db
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: root
+    networks:
+      - app-network
+
+  mongo-setup:
+    build:
+      context: ..
+      dockerfile: infra/mongo-setup.dockerfile
+    container_name: mongo_setup
+    depends_on:
+      - mongo
+    environment:
+      MONGO_URI: mongodb://root:root@mongo:27017/admin
+    networks:
+      - app-network
+
+  gathering-service:
+    build:
+      context: ..
+      dockerfile: infra/gathering.dockerfile
+    image: gathering-app
+    container_name: gathering_app_container
+    ports:
+      - "8001:8080"
+    working_dir: /app
+    depends_on:
+      - mongo
+    environment:
+      MONGO_URI: mongodb://writer:writer@mongo:27017/challenge-db
+      GATHERING_CRON_EXPRESION: '*/5 * * * *'
+    networks:
+      - app-network
+
+  supplier-service:
+    build:
+      context: ..
+      dockerfile: infra/supplier.dockerfile
+    image: supplier-app
+    container_name: supplier_app_container
+    ports:
+      - "8002:8080"
+    working_dir: /app
+    depends_on:
+      - mongo
+    environment:
+      MONGO_URI: mongodb://reader:reader@mongo:27017/challenge-db
+    networks:
+      - app-network
+
+volumes:
+  mongo-data:
+
+networks:
+  app-network:
+    driver: bridge
