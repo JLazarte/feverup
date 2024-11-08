@@ -15,6 +15,7 @@
   "license": "ISC",
   "devDependencies": {
     "@types/express": "^5.0.0",
+    "@types/lru-cache": "^7.10.10",
     "@types/mongodb": "^4.0.7",
     "@typescript-eslint/eslint-plugin": "^7.2.0",
     "@typescript-eslint/parser": "^7.2.0",
@@ -25,8 +26,9 @@
     "typescript": "^4.9.0"
   },
   "dependencies": {
+    "events-core": "file:../events-core/",
     "express": "^4.21.1",
-    "mongodb": "^6.10.0",
-    "events-core": "file:../events-core/"
+    "lru-cache": "^11.0.2",
+    "mongodb": "^6.10.0"
   }
 }

@@ -169,3 +169,75 @@ Details (average, fastest, slowest):
 Status code distribution:
   [200] 19672 responses
 ```
+
+## VERSION 3: 500 concurrents request
+
+This time we added a LRUCache with 5 min of ttl to avoid duplicate request to the Database
+
+` 99% percentile in 3.2239 secs `
+
+` 19383 of 20000 requests succeeded `
+
+```
+hey -n 20000 -c 500 "http://localhost:8002/events"
+
+Summary:
+  Total:        5.6331 secs
+  Slowest:      4.0543 secs
+  Fastest:      0.0010 secs
+  Average:      0.1085 secs
+  Requests/sec: 3550.4399
+  
+  Total data:   8121477 bytes
+  Size/request: 419 bytes
+
+Response time histogram:
+  0.001 [1]     |
+  0.406 [18902] |■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+  0.812 [83]    |
+  1.217 [40]    |
+  1.622 [59]    |
+  2.028 [7]     |
+  2.433 [13]    |
+  2.838 [77]    |
+  3.244 [10]    |
+  3.649 [76]    |
+  4.054 [115]   |
+
+
+Latency distribution:
+  10% in 0.0176 secs
+  25% in 0.0274 secs
+  50% in 0.0508 secs
+  75% in 0.0683 secs
+  90% in 0.0898 secs
+  95% in 0.1060 secs
+  99% in 3.2239 secs
+
+Details (average, fastest, slowest):
+  DNS+dialup:   0.0017 secs, 0.0010 secs, 4.0543 secs
+  DNS-lookup:   0.0003 secs, 0.0000 secs, 0.0285 secs
+  req write:    0.0000 secs, 0.0000 secs, 0.0078 secs
+  resp wait:    0.1067 secs, 0.0010 secs, 3.9484 secs
+  resp read:    0.0000 secs, 0.0000 secs, 0.0167 secs
+
+Status code distribution:
+  [200] 19383 responses
+
+```
+
+## Version 3 - VEGETA: 1000 request concurrent
+
+` 99% percentile in 3.098 secs `
+
+```
+Requests      [total, rate, throughput]         10000, 1000.14, 1000.01
+Duration      [total, attack, wait]             10s, 9.999s, 1.236ms
+Latencies     [min, mean, 50, 90, 95, 99, max]  611µs, 182.621ms, 1.623ms, 74.65ms, 1.874s, 3.098s, 3.148s
+Bytes In      [total, mean]                     6220000, 622.00
+Bytes Out     [total, mean]                     0, 0.00
+Success       [ratio]                           100.00%
+Status Codes  [code:count]                      200:10000  
+Error Set:
+
+```
