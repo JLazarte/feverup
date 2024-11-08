@@ -33,6 +33,7 @@ export abstract class MongoEventsRepositoryBase {
 			if (shouldCloseConnection) {
 				const connection = this.currentClientConnection as MongoClient;
 				this.currentClientConnection = undefined;
+				console.log("Closing connection to the database");
 				await (connection.close());
 				
 			}
