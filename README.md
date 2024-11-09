@@ -257,7 +257,7 @@ Status Codes  [code:count]                      200:10000
 Error Set:
 ```
 
-## Version 4 : VEGETA 100 request cocurrent
+## Version 4 : VEGETA 1000 request concurrent
 
 We enable gzip as a compressor method for the response;
 
@@ -287,3 +287,42 @@ Status Codes  [code:count]                      200:20000
 Error Set:
 
 ```
+
+## Version 4: 1000 requests concurrent with new test
+
+` 99% percentile less than 7s after warmup ` 
+
+```
+On startUp:
+
+Latencies     [min, mean, 50, 90, 95, 99, max]  610.292µs, 344.961ms, 5.101ms, 157.647ms, 2.723s, 7.159s, 7.949s
+
+After warmup
+
+Latencies     [min, mean, 50, 90, 95, 99, max]  578.166µs, 1.109s, 27.113ms, 4.907s, 7.786s, 15.59s, 16.482s
+Latencies     [min, mean, 50, 90, 95, 99, max]  613.917µs, 33.812ms, 2.242ms, 41.838ms, 64.541ms, 1.306s, 1.909s
+Latencies     [min, mean, 50, 90, 95, 99, max]  713.417µs, 834.828ms, 55.383ms, 796.533ms, 5.438s, 16.256s, 16.783s
+
+```
+
+## Version 5: 1000 requests concurrent with new tests
+
+Migrate to hyper-express server and ingress cache to 10k elements
+
+` 99% percentile less than 1.2s after warmup ` 
+
+```
+On startUp:
+
+Latencies     [min, mean, 50, 90, 95, 99, max]  1.338ms, 8.8s, 8.314s, 16.645s, 17.015s, 17.408s, 19.407s
+
+After warmup
+
+Latencies     [min, mean, 50, 90, 95, 99, max]  532.542µs, 1.566s, 44.147ms, 5.437s, 5.889s, 6.466s, 7.267s
+Success       [ratio]                           99.29%
+Latencies     [min, mean, 50, 90, 95, 99, max]  476.666µs, 37.193ms, 1.522ms, 83.013ms, 258.476ms, 613.918ms, 701.369ms
+Success       [ratio]                           100.00%
+Latencies     [min, mean, 50, 90, 95, 99, max]  532.917µs, 82.032ms, 3.125ms, 280.294ms, 568.028ms, 948.338ms, 1.08s
+Success       [ratio]                           100.00%
+Latencies     [min, mean, 50, 90, 95, 99, max]  493.791µs, 80.879ms, 1.5ms, 211.016ms, 688.578ms, 1.119s, 1.233s
+Success       [ratio]                           100.00%

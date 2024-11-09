@@ -10,7 +10,7 @@ import { RepositoryWithMemory } from './application/repository-decorator/reposit
 				'challenge-db',
 				process.env.MONGO_URI as string
 			),
-			1000
+			10 * 1000
 		)
 	),
 	8080,

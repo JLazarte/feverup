@@ -1,35 +1,33 @@
-import Express, { Request, Response } from 'express';
-import Compression from 'compression'
-import { Query } from 'express-serve-static-core';
-
+import { Server, Request, Response, MiddlewareHandler } from 'hyper-express'
 import { ErrorAppResponse, SuccessAppResponse } from './dto-models/server.dto';
 
 export abstract class AppBase {
-	protected server?: Express.Express;
+	protected server?: Server;
 
 	constructor(private port: number) {}
 
-	protected abstract setup(server: Express.Express): void;
+	protected abstract setup(server: any): void;
 
 	private init() {
-		this.server = Express();
-
-		this.server.use(Compression());
+		this.server = new Server();
 
 		this.setup(this.server);
 
-		this.server.listen(this.port, () => {
-			console.log(`Example app listening on port ${this.port}`);
-		});
+		this.server
+			.listen(this.port)
+			.then(() => {
+				console.log(`Example app listening on port ${this.port}`);
+			});
 	}
 
 	protected defineHandler<T extends object>(
-		dataSupplier: (params: Query) => T | Promise<T>,
-	): Express.RequestHandler {
+		dataSupplier: (params: { [key: string]: string }) => T | Promise<T>,
+	): (req: Request, res: Response) => void {
 		return async (req: Request, res: Response) => {
 			try {
-				const response: SuccessAppResponse<T> = { data: await dataSupplier(req.query) };
+				const response: SuccessAppResponse<T> = { data: await dataSupplier(req.query_parameters) };
 				res.json(response);
+
 			} catch (err) {
 				const error = err as Error;
 				console.error(error.message, error);
