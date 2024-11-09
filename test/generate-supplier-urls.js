@@ -17,19 +17,22 @@ function createDate(initialDate, daysToAdd) {
 }
 
 const initialDate = new Date(2021, 1, 1); 
-const numUrls = 600; 
+const startQty = 600; 
+const endQty = 10;
 
-const urls = (new Array(numUrls)).fill(0).map((_, idx) => {
-	const randomDays = Math.floor(Math.random() * 200) + 1;
-
+const urls = (new Array(startQty)).fill(0).flatMap((_, idx) => {
 	const startDate = createDate(initialDate, idx);
-	const endDate = createDate(startDate, randomDays);
 
-	const query = `start_date=${formatDate(startDate)}&end_date=${formatDate(endDate)}`;
-	
-	return `GET ${baseUrl}?${query}`;
+	return (new Array(endQty).fill(0).map(() => {
+		const randomDays = Math.floor(Math.random() * 200) + 1;
+		const endDate = createDate(startDate, randomDays);
+
+		const query = `start_date=${formatDate(startDate)}&end_date=${formatDate(endDate)}`;
+		
+		return `GET ${baseUrl}?${query}`;
+	}));
 })
 
 fs.writeFileSync(outputFile, urls.join('\n'), 'utf-8');
 
-console.log(`Generated ${numUrls} URLs in ${outputFile}`);
+console.log(`Generated ${startQty * endQty} URLs in ${outputFile}`);
