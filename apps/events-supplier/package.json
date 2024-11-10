@@ -1,5 +1,5 @@
 {
-  "name": "challenge-app",
+  "name": "events-supplier",
   "version": "1.0.0",
   "description": "multi entry point project",
   "scripts": {
@@ -15,7 +15,6 @@
   "license": "ISC",
   "devDependencies": {
     "@types/compression": "^1.7.5",
-    "@types/express": "^5.0.0",
     "@types/lru-cache": "^7.10.10",
     "@types/mongodb": "^4.0.7",
     "@typescript-eslint/eslint-plugin": "^7.2.0",
@@ -24,12 +23,11 @@
     "eslint-config-airbnb-base": "^15.0.0",
     "eslint-config-airbnb-typescript": "^18.0.0",
     "eslint-plugin-import": "^2.31.0",
-    "typescript": "^5.6.3"
+    "typescript": "^5.4.5"
   },
   "dependencies": {
     "compression": "^1.7.5",
     "events-core": "file:../events-core/",
-    "express": "^4.21.1",
     "hyper-express": "^6.17.2",
     "lru-cache": "^11.0.2",
     "mongodb": "^6.10.0"

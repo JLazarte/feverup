@@ -297,7 +297,7 @@ On startUp:
 
 Latencies     [min, mean, 50, 90, 95, 99, max]  610.292µs, 344.961ms, 5.101ms, 157.647ms, 2.723s, 7.159s, 7.949s
 
-After warmup
+After warmup:
 
 Latencies     [min, mean, 50, 90, 95, 99, max]  578.166µs, 1.109s, 27.113ms, 4.907s, 7.786s, 15.59s, 16.482s
 Latencies     [min, mean, 50, 90, 95, 99, max]  613.917µs, 33.812ms, 2.242ms, 41.838ms, 64.541ms, 1.306s, 1.909s
@@ -309,14 +309,14 @@ Latencies     [min, mean, 50, 90, 95, 99, max]  713.417µs, 834.828ms, 55.383ms,
 
 Migrate to hyper-express server and ingress cache to 10k elements
 
-` 99% percentile less than 1.2s after warmup ` 
+` 99% percentile less than 1.120s after warmup ` 
 
 ```
 On startUp:
 
 Latencies     [min, mean, 50, 90, 95, 99, max]  1.338ms, 8.8s, 8.314s, 16.645s, 17.015s, 17.408s, 19.407s
 
-After warmup
+After warmup:
 
 Latencies     [min, mean, 50, 90, 95, 99, max]  532.542µs, 1.566s, 44.147ms, 5.437s, 5.889s, 6.466s, 7.267s
 Success       [ratio]                           99.29%
@@ -326,3 +326,44 @@ Latencies     [min, mean, 50, 90, 95, 99, max]  532.917µs, 82.032ms, 3.125ms, 2
 Success       [ratio]                           100.00%
 Latencies     [min, mean, 50, 90, 95, 99, max]  493.791µs, 80.879ms, 1.5ms, 211.016ms, 688.578ms, 1.119s, 1.233s
 Success       [ratio]                           100.00%
+```
+
+# Version 6: 1000 requests concurrents with new test
+
+Apply a new search strategy by week
+
+` 99% percentile less than 100ms after warmup ` 
+
+```
+On startUp:
+
+Latencies     [min, mean, 50, 90, 95, 99, max]  530.958µs, 1.653s, 1.138s, 4.193s, 5.098s, 5.92s, 6.509s
+Success       [ratio]                           99.78%
+
+After warmup:
+
+Latencies     [min, mean, 50, 90, 95, 99, max]  483.25µs, 35.658ms, 1.063ms, 23.088ms, 245.151ms, 785.36ms, 1.041s
+Success       [ratio]                           100.00%
+Latencies     [min, mean, 50, 90, 95, 99, max]  499.417µs, 3.978ms, 1.14ms, 8.199ms, 13.189ms, 62.679ms, 156.445ms
+Success       [ratio]                           100.00%
+Latencies     [min, mean, 50, 90, 95, 99, max]  490.875µs, 3.147ms, 1.105ms, 7.153ms, 11.04ms, 34.309ms, 90.955ms
+Success       [ratio]                           100.00%
+```
+
+# Version 6: 2000 requests concurrents with new test
+
+` 99% percentile less than 120ms on average after warmup ` 
+
+```
+Latencies     [min, mean, 50, 90, 95, 99, max]  490.291µs, 92.794ms, 1.496ms, 268.473ms, 872.179ms, 1.26s, 1.54s
+Success       [ratio]                           99.64%
+
+After warmup:
+
+Latencies     [min, mean, 50, 90, 95, 99, max]  488.083µs, 4.837ms, 1.507ms, 5.763ms, 14.525ms, 85.857ms, 176.554ms
+Success       [ratio]                           100.00%
+Latencies     [min, mean, 50, 90, 95, 99, max]  538.542µs, 2.883ms, 1.622ms, 5.422ms, 9.452ms, 21.643ms, 146.206ms
+Success       [ratio]                           100.00%
+Latencies     [min, mean, 50, 90, 95, 99, max]  531.75µs, 6.96ms, 1.474ms, 6.925ms, 17.609ms, 175.207ms, 358.382ms
+Success       [ratio]                           100.00%
+```

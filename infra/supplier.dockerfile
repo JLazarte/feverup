@@ -46,7 +46,7 @@ COPY --from=events-core /app ./node_modules/events-core
 
 
 # Run app
-FROM node:lts-gallium as App
+FROM node:lts as App
 
 WORKDIR /app
 
