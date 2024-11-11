@@ -328,7 +328,7 @@ Latencies     [min, mean, 50, 90, 95, 99, max]  493.791µs, 80.879ms, 1.5ms, 211
 Success       [ratio]                           100.00%
 ```
 
-# Version 6: 1000 requests concurrents with new test
+## Version 6: 1000 requests concurrents with new test
 
 Apply a new search strategy by week
 
@@ -350,7 +350,7 @@ Latencies     [min, mean, 50, 90, 95, 99, max]  490.875µs, 3.147ms, 1.105ms, 7.
 Success       [ratio]                           100.00%
 ```
 
-# Version 6: 2000 requests concurrents with new test
+## Version 6: 2000 requests concurrents with new test
 
 ` 99% percentile less than 120ms on average after warmup ` 
 

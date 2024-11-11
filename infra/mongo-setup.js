@@ -20,7 +20,6 @@ async function setupDatabase() {
 
 		const { users } = await db.command({ usersInfo: 1 });
 		const writerUser = users.find((item) => item.user === 'writer');
-		const readerUser = users.find((item) => item.user === 'reader');
 
 		if (writerUser === undefined) {
 			// Create writer user
@@ -30,16 +29,6 @@ async function setupDatabase() {
 				roles: [{ role: 'readWrite', db: 'challenge-db' }],
 			});
 			console.log('Created user: writer');
-		}
-
-		if (readerUser === undefined) {
-			// Create reader user
-			await db.command({
-				createUser: 'reader',
-				pwd: 'reader',
-				roles: [{ role: 'read', db: 'challenge-db' }],
-			});
-			console.log('Created user: reader');
 		}
 
 		console.log('Setup database: FINISH');

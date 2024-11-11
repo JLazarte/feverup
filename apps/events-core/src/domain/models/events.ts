@@ -8,12 +8,15 @@ export interface RawEvent {
 	max_price: number
 }
 
-export interface Event {
+export interface Period {
+	start_date: string, // "2024-11-01",
+	end_date: string, // "2024-11-01",
+}
+
+export interface Event extends Period {
 	id: string,
 	title: string,
-	start_date: string, // "2024-11-01",
 	start_time: string, // "22:38:19",
-	end_date: string, // "2024-11-01",
 	end_time: string, // "14:45:15",
 	min_price: number,
 	max_price: number

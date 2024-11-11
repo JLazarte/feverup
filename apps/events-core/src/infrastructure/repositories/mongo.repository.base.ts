@@ -1,51 +1,45 @@
-import { MongoClient, Collection } from 'mongodb';
+import { MongoClient, Collection, MongoClientOptions } from 'mongodb';
+import { RepositoryBase } from './repository.base';
 
-export abstract class MongoEventsRepositoryBase {
-
-	private operationCount = 0;
-	private currentClientConnection?: MongoClient;
-
+export abstract class MongoRepositoryBase extends RepositoryBase<MongoClient> {
+	
 	constructor(
 		private database: string,
 		private connectionUrl: string,
-	) {}
-
-	private createNewConnection(): MongoClient {
-		console.log("Open new connection to the database");
-		return new MongoClient(this.connectionUrl);
+		private mongoOptions: MongoClientOptions,
+		name: string
+	) {
+		super(name)
 	}
 
-	protected async openConection<R>(callback: (client: MongoClient) => Promise<R>): Promise<R> {
-		let result: R;
+	protected async createClient(): Promise<MongoClient> {
+		return new MongoClient(this.connectionUrl, this.mongoOptions);
+	};
 
-		this.operationCount = this.operationCount + 1;
-
-		try {
-			this.currentClientConnection = this.currentClientConnection || this.createNewConnection();
-			result = await callback(this.currentClientConnection);
-
-		} finally {
-			this.operationCount = this.operationCount - 1;
-
-			const shouldCloseConnection = this.currentClientConnection !== undefined &&
-				this.operationCount === 0;
-
-			if (shouldCloseConnection) {
-				const connection = this.currentClientConnection as MongoClient;
-				this.currentClientConnection = undefined;
-				console.log("Closing connection to the database");
-				await (connection.close());
-				
-			}
-		}
-
-		return result;
+	protected createConnection(): Promise<MongoClient> {
+		return this.client?.connect() as Promise<MongoClient>;
 	}
 
-	protected async useEventsCollection<R>(
+	protected closeConnection(connection: MongoClient): Promise<void> {
+		// return connection.close();
+		// Allow mongo client handle the idle connections;
+		return Promise.resolve()
+	}
+
+	protected async testConnection(connection: MongoClient): Promise<any> {
+		const ping = await connection.db().command({ ping: 1 });
+		console.log('Ping database: ', ping);
+		return ping;
+	}
+
+	protected async useConection<R>(callback: (client: MongoClient) => Promise<R>): Promise<R> {
+		return callback(await this.createConnection());
+	}
+
+	protected useEventsCollection<R>(
 		callback: (collection: Collection) => Promise<R>,
 	): Promise<R> {
-		return this.openConection((client) => {
+		return this.useConection((client) => {
 			const eventsCollection = client.db(this.database).collection('events');
 			return callback(eventsCollection);
 		});

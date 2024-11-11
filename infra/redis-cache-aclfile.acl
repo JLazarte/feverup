@@ -1,0 +1,3 @@
+user default on >root  ~* +@all
+user writer on >writer ~* +@write +ping 
+user reader on >reader ~* +@read +ping 

@@ -1,17 +1,26 @@
-import { MongoEventsRepository } from './infrastructure/repositories/mongo.repository';
 import { SupplierService } from './application/supplier.service';
 import { SupplierApp } from './infrastructure/apps/supplier';
-import { RepositoryWithMemory } from './application/repository-decorator/repository-with-memory.service';
+import { RepositoryWithCache } from './application/repository-decorator/repository-with-cache.service';
+import { WeeksRedisRepository } from './infrastructure/repositories/weeks-redis.repository';
+import { DatesUtilService } from 'events-core/application/dates-util.service';
+
+
+const weeksRepository = new WeeksRedisRepository(
+	process.env.REDIS_URI as string,
+	'weeks-redis-respository'
+);
+
+weeksRepository.initAndTest();
+
+const eventsRepositoryWithCache = new RepositoryWithCache(
+	new DatesUtilService(),
+	weeksRepository,
+	52 * 10,
+);
+
+const supplierService = new SupplierService(eventsRepositoryWithCache);
 
 (new SupplierApp(
-	new SupplierService(
-		new RepositoryWithMemory(
-			new MongoEventsRepository(
-				'challenge-db',
-				process.env.MONGO_URI as string
-			),
-			10 * 1000
-		)
-	),
+	supplierService,
 	8080,
 )).run();
