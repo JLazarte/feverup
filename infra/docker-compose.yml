@@ -18,7 +18,7 @@ services:
       test: [ "CMD-SHELL", "echo 'db.runCommand(\"ping\").ok' | mongosh localhost:27017/admin --quiet" ]
       interval: 5s
       timeout: 2s
-      retries: 3
+      retries: 5
 
   mongo-setup:
     build:
@@ -68,6 +68,7 @@ services:
     environment:
       MONGO_URI: mongodb://writer:writer@mongo:27017/challenge-db
       REDIS_URI: redis://writer:writer@redis:6379
+      EVENTS_PROVIDER_URL: https://provider.code-challenge.feverup.com/api/events
       GATHERING_CRON_EXPRESION: '*/5 * * * *'
     networks:
       - app-network

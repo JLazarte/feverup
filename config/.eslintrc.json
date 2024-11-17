@@ -9,7 +9,7 @@
     "no-tabs": ["error", { "allowIndentationTabs": true }],
     "@typescript-eslint/indent": ["error", "tab"],
     "import/prefer-default-export": 0,
-    "class-methods-use-this": 1,
+    "class-methods-use-this": 0,
     "max-classes-per-file": 1
   },
   "parserOptions": { "project": ["tsconfig.json"] }

@@ -14,7 +14,11 @@ async function setupDatabase() {
 
 		if (!hasEventsCollectionInitialized) {
 			await db.createCollection('events');
-			await db.collection('events').createIndex({ start_date: 1, end_date: 1 });
+			await db.collection('events')
+				.createIndex({
+					start_at: 1,
+					end_at: -1,
+				});
 			console.log('Created collection: events');
 		}
 

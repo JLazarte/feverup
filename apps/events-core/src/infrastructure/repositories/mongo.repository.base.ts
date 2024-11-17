@@ -2,28 +2,27 @@ import { MongoClient, Collection, MongoClientOptions } from 'mongodb';
 import { RepositoryBase } from './repository.base';
 
 export abstract class MongoRepositoryBase extends RepositoryBase<MongoClient> {
-	
 	constructor(
 		private database: string,
 		private connectionUrl: string,
 		private mongoOptions: MongoClientOptions,
-		name: string
+		name: string,
 	) {
-		super(name)
+		super(name);
 	}
 
 	protected async createClient(): Promise<MongoClient> {
 		return new MongoClient(this.connectionUrl, this.mongoOptions);
-	};
+	}
 
 	protected createConnection(): Promise<MongoClient> {
 		return this.client?.connect() as Promise<MongoClient>;
 	}
 
-	protected closeConnection(connection: MongoClient): Promise<void> {
+	protected closeConnection(): Promise<void> {
 		// return connection.close();
 		// Allow mongo client handle the idle connections;
-		return Promise.resolve()
+		return Promise.resolve();
 	}
 
 	protected async testConnection(connection: MongoClient): Promise<any> {

@@ -1,6 +1,6 @@
 import NodeExpat from 'node-expat';
-import { RawEvent } from 'events-core/domain/models/events';
-import { BaseEvent, Event, Zone } from '../dto-models/event-provider.dto';
+import { Event } from 'events-core/domain/models/events';
+import { BaseEventTag, EventTag, ZoneTag } from '../dto-models/event-provider.dto';
 
 type ElementTag = 'base_event' | 'event' | 'zone';
 
@@ -9,29 +9,29 @@ type ElementHandler = {
 };
 
 export class EventsXMLResponseParser {
-	private defineParser(eventList: RawEvent[]): NodeExpat.Parser {
+	private defineParser(eventList: Event[]): NodeExpat.Parser {
 		const parser = new NodeExpat.Parser();
 
-		let currentBaseEvent: BaseEvent;
-		let currentEvent: Event;
+		let currentBaseEvent: BaseEventTag;
+		let currentEvent: EventTag;
 		let eventPrices: { min_price: number, max_price: number } | undefined;
 
 		const handlers: ElementHandler = {
-			base_event: (attr: BaseEvent) => {
+			base_event: (attr: BaseEventTag) => {
 				currentBaseEvent = {
 					base_event_id: attr.base_event_id,
 					title: attr.title,
 					sell_mode: attr.sell_mode,
 				};
 			},
-			event: (attr: Event) => {
+			event: (attr: EventTag) => {
 				currentEvent = {
 					event_id: attr.event_id,
 					event_start_date: attr.event_start_date,
 					event_end_date: attr.event_end_date,
 				};
 			},
-			zone: (attr: Zone) => {
+			zone: (attr: ZoneTag) => {
 				const price = parseFloat(attr.price);
 				eventPrices = {
 					min_price: eventPrices === undefined
@@ -54,8 +54,8 @@ export class EventsXMLResponseParser {
 					id: `${currentBaseEvent.base_event_id}::${currentEvent.event_id}`,
 					title: currentBaseEvent.title,
 					sell_type: currentBaseEvent.sell_mode,
-					start_iso_datetime: currentEvent.event_start_date,
-					end_iso_datetime: currentEvent.event_end_date,
+					starts_at: new Date(`${currentEvent.event_start_date}Z`),
+					ends_at: new Date(`${currentEvent.event_end_date}Z`),
 					min_price: eventPrices?.min_price || -1,
 					max_price: eventPrices?.max_price || -1,
 				});
@@ -67,10 +67,10 @@ export class EventsXMLResponseParser {
 		return parser;
 	}
 
-	parse(dataBuffer: NodeJS.ReadableStream): Promise<RawEvent[]> {
+	parse(dataBuffer: NodeJS.ReadableStream): Promise<Event[]> {
 		return new Promise((resolve, reject) => {
 			try {
-				const events: RawEvent[] = [];
+				const events: Event[] = [];
 				const parser = this.defineParser(events);
 
 				parser.on('end', () => {

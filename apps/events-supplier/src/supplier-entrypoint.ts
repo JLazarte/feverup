@@ -1,8 +1,10 @@
 import { SupplierService } from './application/supplier.service';
 import { SupplierApp } from './infrastructure/apps/supplier';
-import { RepositoryWithCache } from './application/repository-decorator/repository-with-cache.service';
+import { EventsFromCacheRepository } from './application/repositories/events-from-cache.repository';
 import { WeeksRedisRepository } from './infrastructure/repositories/weeks-redis.repository';
-import { DatesUtilService } from 'events-core/application/dates-util.service';
+import { DatesUtilService } from 'events-core/application/utils/dates-util.service';
+import { EventsMapper } from './application/events.mapper';
+import { WeekCacheService } from './application/repositories/weeks-cache.service';
 
 
 const weeksRepository = new WeeksRedisRepository(
@@ -12,15 +14,23 @@ const weeksRepository = new WeeksRedisRepository(
 
 weeksRepository.initAndTest();
 
-const eventsRepositoryWithCache = new RepositoryWithCache(
-	new DatesUtilService(),
-	weeksRepository,
-	52 * 10,
+const dateUtils = new DatesUtilService();
+
+const weekCacheService = new WeekCacheService(
+	dateUtils,
+	52 * 10
 );
 
-const supplierService = new SupplierService(eventsRepositoryWithCache);
+const eventsRepositoryWithCache = new EventsFromCacheRepository(
+	dateUtils,
+	weeksRepository,
+	weekCacheService
+);
 
 (new SupplierApp(
-	supplierService,
+	new SupplierService(
+		new EventsMapper(dateUtils),
+		eventsRepositoryWithCache
+	),
 	8080,
 )).run();

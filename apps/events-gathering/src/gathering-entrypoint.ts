@@ -1,24 +1,27 @@
 import { Axios } from 'axios';
 import { MongoClientOptions, ReadConcernLevel } from 'mongodb';
 
-import { EventsMapper } from './application/events.mapper';
+import { DatesUtilService } from 'events-core/application/utils/dates-util.service';
+
 import { GatheringApp } from './infrastructure/apps/gathering';
 import { GatheringService } from './application/gathering.service';
 import { EventsMongoRepository } from './infrastructure/repositories/events-mongo.repository';
 import { EventsXMLResponseParser } from './infrastructure/clients/parser/xml-events-parser';
-import { HttpClientEventsProviderService } from './infrastructure/clients/http-provider.service';
+import { HttpClientEventsProviderService } from './infrastructure/clients/http-events-provider.service';
 import { FilteredEventsProviderService } from './application/provider-decorator/filtered-provider.service';
 import { EventsProviderWithMemoryService } from './application/provider-decorator/provider-with-memory.service';
 import { WeeksRedisRepository } from './infrastructure/repositories/weeks-redis.repository';
-import { DatesUtilService } from 'events-core/application/dates-util.service';
 
 const EACH_5_MINUTES = '*/5 * * * *';
 
 const axiosClient = new Axios({});
 
+const datesUtil = new DatesUtilService();
+
 const providerService = new EventsProviderWithMemoryService(
 	new FilteredEventsProviderService(
 		new HttpClientEventsProviderService(
+			process.env.EVENTS_PROVIDER_URL as string,
 			axiosClient,
 			new EventsXMLResponseParser(),
 		),
@@ -49,8 +52,7 @@ const gatheringService = new GatheringService(
 	weeksRedisRepository,
 	eventsMongoRepository,
 	providerService,
-	new EventsMapper(),
-	new DatesUtilService()
+	datesUtil
 );
 
 gatheringService.collect();

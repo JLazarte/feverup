@@ -6,15 +6,21 @@ export class WeeksRedisRepository extends RedisRepositoryBase implements WeeksRe
 
 	private readonly CACHE_NAME = 'WEEKS_CACHE';
 
-	private getKey(week: number) {
-		return `${this.CACHE_NAME}::${week}`
-	}
-
 	upsert(week: number, events: Event[]): Promise<any> {
 		return this.useConection(async (connection) => {
 			console.log('Update week', week, 'with n elements', events.length);
-			const value = JSON.stringify(events);
-			await connection.set(this.getKey(week), value);
+
+			const [ previusValue ] = await connection
+				.zRangeByScore(this.CACHE_NAME, week, week);
+
+			if (previusValue) {
+				await connection.zRemRangeByScore(this.CACHE_NAME, week, week);
+			}
+
+			return await connection.zAdd(
+				this.CACHE_NAME,
+				{ score: week, value: JSON.stringify(events)}
+			);
 		})
 	}
 }

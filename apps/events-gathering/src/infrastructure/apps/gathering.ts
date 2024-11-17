@@ -10,7 +10,7 @@ export class GatheringApp {
 
 	public run(): void {
 		scheduleJob(this.cronExpresion, async () => {
-			console.log('GATHERING');
+			console.log('GatheringApp Running');
 			await this.gatheringService.collect();
 		});
 	}

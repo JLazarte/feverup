@@ -1,5 +1,6 @@
-import { Server, Request, Response, MiddlewareHandler } from 'hyper-express'
-import { ErrorAppResponse, SuccessAppResponse } from './dto-models/server.dto';
+import { Server, Request, Response } from 'hyper-express'
+import { ErrorAppResponse, SuccessAppResponse } from './dto-models/server-response';
+import { AppError } from './dto-models/exceptions';
 
 export abstract class AppBase {
 	protected server?: Server;
@@ -20,6 +21,10 @@ export abstract class AppBase {
 			});
 	}
 
+	private isAppError(err: any): err is AppError {
+		return err !== undefined && err.code !== undefined;
+	}
+
 	protected defineHandler<T extends object>(
 		dataSupplier: (params: { [key: string]: string }) => T | Promise<T>,
 	): (req: Request, res: Response) => void {
@@ -28,12 +33,17 @@ export abstract class AppBase {
 				const response: SuccessAppResponse<T> = { data: await dataSupplier(req.query_parameters) };
 				res.json(response);
 
-			} catch (err) {
-				const error = err as Error;
+			} catch (err: any) {
+				const error: AppError = this.isAppError(err) ? err
+					: new AppError(500, err?.message || String(err));
+
 				console.error(error.message, error);
 
-				const response: ErrorAppResponse = { error: { code: 'code', message: error.message } };
-				res.status(500).json(response);
+				const response: ErrorAppResponse = {
+					error: { code: error.code , message: error.message }
+				};
+
+				res.status(error.statusCode).json(response);
 			}
 		};
 	}

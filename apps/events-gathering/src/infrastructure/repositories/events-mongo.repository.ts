@@ -1,6 +1,5 @@
-import { AnyBulkWriteOperation, Document } from 'mongodb';
-import { Event } from 'events-core/domain/models/events';
-import { EventsQuery } from 'events-core/domain/models/query';
+import { AnyBulkWriteOperation, Document, Filter } from 'mongodb';
+import { Period, Event } from 'events-core/domain/models/events';
 import { MongoRepositoryBase } from 'events-core/infrastructure/repositories/mongo.repository.base';
 import { EventsRepositoryBase } from '../../domain/ports/events-repository.service';
 
@@ -23,27 +22,36 @@ export class EventsMongoRepository extends MongoRepositoryBase implements Events
 		}
 
 		return this.useEventsCollection(async (collection) => {
-			const operations = events.map((event: Event) => this.createUpsertOperation(event, 'id'));
-			const upsertManyResult = await collection.bulkWrite(operations);
+			const operations = events.map(event => this.createUpsertOperation(event, 'id'));
 
-			const upsertCount = [ 
-				upsertManyResult.insertedCount,
-				upsertManyResult.modifiedCount,
-				upsertManyResult.upsertedCount
+			const {
+				insertedCount,
+				modifiedCount,
+				upsertedCount
+			} = await collection.bulkWrite(operations);
+
+			const upsertCount = [
+				insertedCount,
+				modifiedCount,
+				upsertedCount 
 			].reduce((acc, act) => acc + act, 0);
 
 			console.log(`Updated ${upsertCount} documents`);
 		});
 	}
 
-	find(query: EventsQuery): Promise<Event[]> {
+	find(query: Period): Promise<Event[]> {
 		return this.useEventsCollection((collection) => {
 			console.log('Searching events, filterd by:', query);
+			
+			const mongoQuery: Filter<Event> = {
+				starts_at: { $lte: query.ends_at } ,
+				ends_at: { $gte: query.starts_at }
+			}
+
 			return collection
-				.find<Event>({
-					start_date: { $lte: query.end_date } ,
-					end_date: { $gte: query.start_date } }
-				).map((event: Event & Document) => {
+				.find<Event>(mongoQuery as Filter<Document>)
+				.map((event: Event & Document) => {
 					delete event._id;
 					return event;
 				})

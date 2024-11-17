@@ -1,14 +1,15 @@
 export abstract class RepositoryBase<T> {
-
 	protected client?: T;
+
 	private operationCount = 0;
+
 	private currentConnection?: Promise<T>;
 
 	constructor(private name: string) {}
 
 	public async initAndTest() {
 		this.client = await this.createClient();
-		await this.useConection((connection) => this.testConnection(connection))
+		await this.useConection((connection) => this.testConnection(connection));
 	}
 
 	protected abstract createClient(): Promise<T>;
@@ -17,11 +18,9 @@ export abstract class RepositoryBase<T> {
 
 	protected abstract closeConnection(connection: T): Promise<any>;
 
-	protected testConnection(connection: T): Promise<any> {
-		throw new Error(`method testConnection not implemented for db: ${this.name}`);
-	}
+	protected abstract testConnection(connection: T): Promise<any>;
 
-	protected async useConection<R>(callback: (client: T) => Promise<R>): Promise<R> {
+	protected useConection<R>(callback: (client: T) => Promise<R>): Promise<R> {
 		this.operationCount += 1;
 
 		if (this.currentConnection === undefined) {
@@ -29,20 +28,22 @@ export abstract class RepositoryBase<T> {
 			this.currentConnection = this.createConnection();
 		}
 
-		return this.currentConnection
-			.then(connection => callback(connection))
-			.finally(() => {
-				this.operationCount -= 1;
+		const task = this.currentConnection.then((connection) => callback(connection));
 
-				const shouldCloseConnection = this.currentConnection !== undefined
+		task.finally(() => {
+			this.operationCount -= 1;
+
+			const shouldCloseConnection = this.currentConnection !== undefined
 					&& this.operationCount === 0;
 
-				if (shouldCloseConnection) {
-					const lastConnection = this.currentConnection as Promise<T>;
-					this.currentConnection = undefined;
-					console.log('Closing connection to: ', this.name);
-					lastConnection.then(connection => this.closeConnection(connection));
-				}
+			if (shouldCloseConnection) {
+				const lastConnection = this.currentConnection as Promise<T>;
+				this.currentConnection = undefined;
+				console.log('Closing connection to: ', this.name);
+				lastConnection.then((connection) => this.closeConnection(connection));
+			}
 		});
+
+		return task;
 	}
 }

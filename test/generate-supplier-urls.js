@@ -18,7 +18,7 @@ function createDate(initialDate, daysToAdd) {
 
 const initialDate = new Date(2021, 1, 1); 
 const startQty = 600; 
-const endQty = 10;
+const endQty = 20;
 
 const urls = (new Array(startQty)).fill(0).flatMap((_, idx) => {
 	const startDate = createDate(initialDate, idx);
@@ -27,11 +27,11 @@ const urls = (new Array(startQty)).fill(0).flatMap((_, idx) => {
 		const randomDays = Math.floor(Math.random() * 200) + 1;
 		const endDate = createDate(startDate, randomDays);
 
-		const query = `start_date=${formatDate(startDate)}&end_date=${formatDate(endDate)}`;
+		const query = `starts_at=${formatDate(startDate)}&ends_at=${formatDate(endDate)}`;
 		
 		return `GET ${baseUrl}?${query}`;
 	}));
-})
+}).sort(() => 0.5 - Math.random());
 
 fs.writeFileSync(outputFile, urls.join('\n'), 'utf-8');
 

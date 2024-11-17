@@ -1,12 +1,17 @@
-import { Event } from 'events-core/domain/models/events';
-
 import { EventsRepositoryBase } from 'events-core/domain/ports/events-repository.service';
-import { EventsQuery } from 'events-core/domain/models/query';
+
+import { EventsQuery, FormatedEvent } from '../domain/models/events';
+import { EventsMapper } from './events.mapper';
 
 export class SupplierService {
-	constructor(private eventsRepository: EventsRepositoryBase) {}
+	constructor(
+		private eventsMapper: EventsMapper,
+		private eventsRepository: EventsRepositoryBase,
+	) {}
 
-	supply(query: EventsQuery): Promise<Event[]> {
-		return this.eventsRepository.find(query);
+	async supply(query: EventsQuery): Promise<FormatedEvent[]> {
+		return (
+			await this.eventsRepository.find(query)
+		).map((event) => this.eventsMapper.map(event));
 	}
 }

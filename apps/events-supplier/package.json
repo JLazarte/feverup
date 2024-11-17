@@ -29,6 +29,7 @@
   "dependencies": {
     "compression": "^1.7.5",
     "events-core": "file:../events-core/",
+    "http-status-codes": "^2.3.0",
     "hyper-express": "^6.17.2",
     "lru-cache": "^11.0.2",
     "mongodb": "^6.10.0",

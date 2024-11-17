@@ -1,7 +1,7 @@
 import { Event } from 'events-core/domain/models/events';
 
 export interface WeeksRepositoryBase {
-//  findAll(): Promise<{ week: number, events: Event[]} | undefined>;
+	getIndexBoundaries(): Promise<{ min: number, max: number }>
 
-	find(week: number): Promise<Event[] | undefined>;
+	find(from?: number, to?: number): Promise<Map<number, Event[]>>
 }
